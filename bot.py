@@ -1,7 +1,6 @@
 import os
 import logging
 import requests
-import json
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
 
@@ -55,8 +54,6 @@ SmartBot uses free APIs to provide intelligent responses without any API keys ne
 
 Made with ❤️ for Telegram
 """
-
-# ============ COMMAND HANDLERS ============
 
 async def start(update: Update, context: CallbackContext):
     """Send a welcome message when /start is issued."""
@@ -133,7 +130,6 @@ async def ask_command(update: Update, context: CallbackContext):
     question = ' '.join(context.args)
     await update.message.reply_text(f"🤔 Thinking about: '{question}'...")
     
-    # Simple response for demonstration
     response = f"🤖 *SmartBot's Response:*\n\nI received your question: '{question}'\n\nTry /advice for advice or /quote for inspiration!"
     
     await update.message.reply_text(
@@ -152,7 +148,6 @@ async def chat_command(update: Update, context: CallbackContext):
     
     message = ' '.join(context.args)
     
-    # Simple response logic
     response = f"🤖 *SmartBot:*\n\nYou said: '{message}'\n\nI'm here to help! Try /advice for wisdom or /quote for inspiration."
     
     await update.message.reply_text(
@@ -174,13 +169,10 @@ async def settings_command(update: Update, context: CallbackContext):
         parse_mode='Markdown'
     )
 
-# ============ MESSAGE HANDLER ============
-
 async def echo_message(update: Update, context: CallbackContext):
     """Handle regular text messages."""
     user_message = update.message.text
     
-    # Simple response logic
     if "hello" in user_message.lower() or "hi" in user_message.lower():
         response = "👋 Hello there! How can I help you today?"
     elif "how are you" in user_message.lower():
@@ -189,10 +181,6 @@ async def echo_message(update: Update, context: CallbackContext):
         response = "🆘 I can help with many things! Try /help to see all my commands."
     elif "thanks" in user_message.lower() or "thank you" in user_message.lower():
         response = "😊 You're welcome! Happy to help."
-    elif "advice" in user_message.lower():
-        response = "💡 Try using /advice for some wisdom!"
-    elif "quote" in user_message.lower():
-        response = "📝 Try using /quote for inspirational quotes!"
     else:
         response = f"🤖 *SmartBot:*\n\nYou said: '{user_message}'\n\nI'm here to help! Try /help to see what I can do."
     
@@ -200,8 +188,6 @@ async def echo_message(update: Update, context: CallbackContext):
         response,
         parse_mode='Markdown'
     )
-
-# ============ CALLBACK QUERY HANDLER ============
 
 async def button_handler(update: Update, context: CallbackContext):
     """Handle inline button clicks."""
@@ -260,8 +246,6 @@ async def button_handler(update: Update, context: CallbackContext):
             parse_mode='Markdown'
         )
 
-# ============ ERROR HANDLER ============
-
 async def error_handler(update: Update, context: CallbackContext):
     """Handle errors."""
     logger.error(f"Update {update} caused error {context.error}")
@@ -271,18 +255,14 @@ async def error_handler(update: Update, context: CallbackContext):
             "❌ Sorry, something went wrong. Please try again later."
         )
 
-# ============ MAIN FUNCTION ============
-
 def main():
     """Start the bot."""
     if not TOKEN:
         logger.error("No TELEGRAM_BOT_TOKEN found in environment variables!")
         return
     
-    # Create the Application
     application = Application.builder().token(TOKEN).build()
 
-    # Add command handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("advice", advice_command))
@@ -291,16 +271,12 @@ def main():
     application.add_handler(CommandHandler("chat", chat_command))
     application.add_handler(CommandHandler("settings", settings_command))
     
-    # Add message handler for text messages
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo_message))
     
-    # Add callback query handler for buttons
     application.add_handler(CallbackQueryHandler(button_handler))
     
-    # Add error handler
     application.add_error_handler(error_handler)
 
-    # Start the bot
     logger.info("Starting SmartBot...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
